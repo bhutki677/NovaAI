@@ -1,24 +1,12 @@
-import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
-    const { pathname } = req.nextUrl;
-
-    // Allow admin routes only for admin users
-    if (pathname.startsWith('/admin') && req.nextauth.token?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/chat', req.url));
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
-  }
-);
+// Login page removed — no auth required for /chat.
+// Admin routes still need admin role (checked inside the admin page itself).
+export function middleware(req: NextRequest) {
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ['/chat/:path*', '/admin/:path*'],
+  matcher: [],
 };
