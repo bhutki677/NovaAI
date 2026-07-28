@@ -50,17 +50,10 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // Login removed — chat is open to everyone, load chats on mount
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/');
-    }
-  }, [status, router]);
-
-  useEffect(() => {
-    if (session) {
-      loadChats();
-    }
-  }, [session]);
+    loadChats();
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -94,7 +87,6 @@ export default function ChatPage() {
     setInput('');
     setIsLoading(true);
 
-    // Optimistic UI update
     const tempUserMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -196,17 +188,8 @@ export default function ChatPage() {
     URL.revokeObjectURL(url);
   };
 
-  if (status === 'loading') {
-    return (
-      <div className="h-screen flex items-center justify-center bg-dark-950">
-        <div className="spinner w-10 h-10 border-2 border-primary-500 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen flex bg-dark-950 overflow-hidden">
-      {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
         chats={chats}
@@ -223,9 +206,7 @@ export default function ChatPage() {
         session={session}
       />
 
-      {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar */}
         <header className="h-14 border-b border-dark-800 flex items-center px-4 gap-3 shrink-0 bg-dark-950/80 backdrop-blur-sm">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -236,7 +217,6 @@ export default function ChatPage() {
 
           <div className="flex-1" />
 
-          {/* Model Selector */}
           <select
             value={model}
             onChange={(e) => setModel(e.target.value as 'gemini' | 'openai')}
@@ -246,7 +226,6 @@ export default function ChatPage() {
             <option value="openai">GPT-4o Mini</option>
           </select>
 
-          {/* Download Chat */}
           {messages.length > 0 && (
             <button
               onClick={handleDownloadChat}
@@ -257,7 +236,6 @@ export default function ChatPage() {
             </button>
           )}
 
-          {/* Admin Link */}
           {(session?.user as any)?.role === 'admin' && (
             <button
               onClick={() => router.push('/admin')}
@@ -269,7 +247,6 @@ export default function ChatPage() {
           )}
         </header>
 
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center px-4">
@@ -328,7 +305,6 @@ export default function ChatPage() {
           )}
         </div>
 
-        {/* Input Area */}
         <div className="border-t border-dark-800 p-4 bg-dark-950">
           <div className="max-w-3xl mx-auto">
             <div className="flex items-end gap-3 bg-dark-900 border border-dark-700 rounded-2xl p-3 focus-within:border-primary-500 transition-colors">
